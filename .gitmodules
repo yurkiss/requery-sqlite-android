@@ -1,0 +1,3 @@
+[submodule "icu"]
+	path = cc-icu/icu
+	url = https://github.com/unicode-org/icu
