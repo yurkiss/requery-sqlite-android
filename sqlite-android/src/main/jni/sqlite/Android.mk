@@ -1,12 +1,13 @@
 LOCAL_PATH:= $(call my-dir)
 LOCAL_ABSOLUT_PATH := $(LOCAL_PATH)
+ICU_VERSION := icu58
 
 $(info LOCAL_ABSOLUT_PATH = $(LOCAL_ABSOLUT_PATH))
 $(info TARGET_ARCH = $(TARGET_ARCH))
 ifeq ($(TARGET_ARCH), arm)
-    LOCAL_LIB := $(LOCAL_ABSOLUT_PATH)/icu/libs/armeabi-v7a
+    LOCAL_LIB := $(LOCAL_ABSOLUT_PATH)/$(ICU_VERSION)/libs/armeabi-v7a
 else
-    LOCAL_LIB := $(LOCAL_ABSOLUT_PATH)/icu/libs/arm64-v8a
+    LOCAL_LIB := $(LOCAL_ABSOLUT_PATH)/$(ICU_VERSION)/libs/arm64-v8a
 endif
 $(info LOCAL_LIB = $(LOCAL_LIB))
 
@@ -109,7 +110,7 @@ LOCAL_SRC_FILES:= \
 LOCAL_SRC_FILES += sqlite3.c
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH)
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/icu/include
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/$(ICU_VERSION)/include
 
 $(info LOCAL_C_INCLUDES = $(LOCAL_C_INCLUDES))
 

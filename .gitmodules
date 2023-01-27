@@ -1,3 +1,7 @@
 [submodule "icu4c-android"]
 	path = icu4c-android
 	url = https://github.com/yurkiss/icu4c-android
+[submodule "icu58"]
+	path = icu58
+	url = https://github.com/unicode-org/icu.git
+	branch = maint/maint-60
