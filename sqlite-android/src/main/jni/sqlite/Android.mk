@@ -1,4 +1,47 @@
 LOCAL_PATH:= $(call my-dir)
+LOCAL_ABSOLUT_PATH := $(LOCAL_PATH)
+
+$(info LOCAL_ABSOLUT_PATH = $(LOCAL_ABSOLUT_PATH))
+$(info TARGET_ARCH = $(TARGET_ARCH))
+ifeq ($(TARGET_ARCH), arm)
+    LOCAL_LIB := $(LOCAL_ABSOLUT_PATH)/icu/libs/armeabi-v7a
+else
+    LOCAL_LIB := $(LOCAL_ABSOLUT_PATH)/icu/libs/arm64-v8a
+endif
+$(info LOCAL_LIB = $(LOCAL_LIB))
+
+include $(CLEAR_VARS)
+
+# Local libs
+
+LOCAL_MODULE    := libicui18n
+LOCAL_SRC_FILES := $(LOCAL_LIB)/libicui18n.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE    := libicuio
+LOCAL_SRC_FILES := $(LOCAL_LIB)/libicuio.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE    := libicutu
+LOCAL_SRC_FILES := $(LOCAL_LIB)/libicutu.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE    := libicuuc
+LOCAL_SRC_FILES := $(LOCAL_LIB)/libicuuc.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE    := libicudata
+LOCAL_SRC_FILES := $(LOCAL_LIB)/libicudata.a
+include $(PREBUILT_STATIC_LIBRARY)
+
 include $(CLEAR_VARS)
 
 # NOTE the following flags,
@@ -31,9 +74,16 @@ sqlite_flags := \
     -DSQLITE_MAX_EXPR_DEPTH=0 \
     -DSQLITE_USE_ALLOCA \
     -DSQLITE_ENABLE_BATCH_ATOMIC_WRITE \
+	-DSQLITE_ENABLE_ICU \
     -O3
 
 LOCAL_CFLAGS += $(sqlite_flags)
+
+LOCAL_CFLAGS += -DHAVE_CONFIG_H -DKHTML_NO_EXCEPTIONS -DGKWQ_NO_JAVA
+LOCAL_CFLAGS += -DNO_SUPPORT_JS_BINDING -DQT_NO_WHEELEVENT -DKHTML_NO_XBL
+LOCAL_CFLAGS += -U__APPLE__
+LOCAL_CFLAGS += -DHAVE_STRCHRNUL=0
+
 LOCAL_CFLAGS += -Wno-unused-parameter -Wno-int-to-pointer-cast
 LOCAL_CFLAGS += -Wno-uninitialized -Wno-parentheses
 LOCAL_CPPFLAGS += -Wno-conversion-null
@@ -59,9 +109,18 @@ LOCAL_SRC_FILES:= \
 LOCAL_SRC_FILES += sqlite3.c
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH)
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/icu/include
+
+$(info LOCAL_C_INCLUDES = $(LOCAL_C_INCLUDES))
 
 LOCAL_MODULE:= libsqlite3x
 LOCAL_LDLIBS += -ldl -llog -latomic
+
+LOCAL_STATIC_LIBRARIES += libicui18n \
+			libicuio \
+            libicutu \
+            libicuuc \
+            libicudata \
 
 include $(BUILD_SHARED_LIBRARY)
 
