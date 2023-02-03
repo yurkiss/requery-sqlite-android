@@ -1,5 +1,5 @@
 #!/bin/bash
-ndk_dir=$ANDROID_NDK_HOME
+ndk_dir=$ANDROID_SDK_HOME/ndk/25.1.8937393
 working_dir=$(pwd)
 sqlite_jni_dir="$working_dir/sqlite-android/src/main/jni/sqlite"
 icu_libraries_dir="$working_dir/icu4c-android/build/install"
