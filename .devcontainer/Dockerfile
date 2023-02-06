@@ -38,7 +38,7 @@ ENV PATH "${PATH}:${ANDROID_HOME}/bin"
 
 RUN dpkg --add-architecture i386 && \
     apt-get update -yqq && \
-    apt-get install -y curl expect git libc6:i386 libgcc1:i386 libncurses5:i386 libstdc++6:i386 zlib1g:i386 openjdk-17-jdk wget unzip vim && \
+    apt-get install -y curl expect git libc6:i386 libgcc1:i386 libncurses5:i386 libstdc++6:i386 zlib1g:i386 openjdk-17-jdk wget unzip vim clang && \
     apt-get clean
 
 RUN groupadd android && useradd -d /opt/android-sdk-linux -g android android
@@ -54,6 +54,8 @@ RUN /opt/android-sdk-linux/cmdline-tools/tools/bin/sdkmanager "cmdline-tools;lat
 RUN /opt/android-sdk-linux/cmdline-tools/tools/bin/sdkmanager "build-tools;${SDK_VERSION}"
 RUN /opt/android-sdk-linux/cmdline-tools/tools/bin/sdkmanager "platform-tools"
 RUN /opt/android-sdk-linux/cmdline-tools/tools/bin/sdkmanager "platforms;android-33"
+RUN /opt/android-sdk-linux/cmdline-tools/tools/bin/sdkmanager "cmake;3.22.1"
+RUN /opt/android-sdk-linux/cmdline-tools/tools/bin/sdkmanager "ndk;25.1.8937393"
 # RUN /opt/android-sdk-linux/cmdline-tools/tools/bin/sdkmanager "system-images;android-30;google_apis;x86_64"
 
 CMD /opt/tools/entrypoint.sh built-in
