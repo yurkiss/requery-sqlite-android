@@ -36,10 +36,38 @@ ENV PATH "${PATH}:${ANDROID_HOME}/platform-tools"
 # ENV PATH "${PATH}:${ANDROID_HOME}/emulator"
 ENV PATH "${PATH}:${ANDROID_HOME}/bin"
 
-RUN dpkg --add-architecture i386 && \
-    apt-get update -yqq && \
-    apt-get install -y curl expect git libc6:i386 libgcc1:i386 libncurses5:i386 libstdc++6:i386 zlib1g:i386 openjdk-17-jdk wget unzip vim clang && \
-    apt-get clean
+#apt-get install -y curl expect git libc6:i386 libgcc1:i386 libncurses5:i386 libstdc++6:i386 zlib1g:i386 && \
+
+RUN dpkg --add-architecture i386
+RUN apt-get update -yqq
+RUN apt-get install -y \
+  curl \
+  expect \
+  git \
+  make \
+  openjdk-17-jdk \
+  wget \
+  unzip \
+  vim \
+  openssh-client \
+  locales \
+  bsdtar \
+  clang
+
+RUN apt-get clean
+RUN rm -rf /var/lib/apt/lists/*
+
+# RUN dpkg --add-architecture i386 && \
+#     apt-get update -yqq && \
+#     apt-get install -y curl expect git clang && \
+#     apt-get clean
+#
+# RUN apt-get install -y openjdk-17-jdk wget unzip vim && \
+#     apt-get clean
+
+RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+
+ENV LANG en_US.UTF-8
 
 RUN groupadd android && useradd -d /opt/android-sdk-linux -g android android
 

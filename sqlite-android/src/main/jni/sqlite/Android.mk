@@ -1,14 +1,15 @@
 LOCAL_PATH:= $(call my-dir)
 LOCAL_ABSOLUT_PATH := $(LOCAL_PATH)
-ICU_VERSION := icu
+ICU_VERSION := icu2
 
 $(info LOCAL_ABSOLUT_PATH = $(LOCAL_ABSOLUT_PATH))
-$(info TARGET_ARCH = $(TARGET_ARCH))
-ifeq ($(TARGET_ARCH), arm)
-    LOCAL_LIB := $(LOCAL_ABSOLUT_PATH)/$(ICU_VERSION)/libs/armeabi-v7a
-else
-    LOCAL_LIB := $(LOCAL_ABSOLUT_PATH)/$(ICU_VERSION)/libs/arm64-v8a
-endif
+$(info TARGET_ARCH_ABI = $(TARGET_ARCH_ABI))
+# ifeq ($(TARGET_ARCH), arm)
+#     LOCAL_LIB := $(LOCAL_ABSOLUT_PATH)/$(ICU_VERSION)/libs/armeabi-v7a
+# else
+#     LOCAL_LIB := $(LOCAL_ABSOLUT_PATH)/$(ICU_VERSION)/libs/arm64-v8a
+# endif
+LOCAL_LIB := $(LOCAL_ABSOLUT_PATH)/$(ICU_VERSION)/libs/$(TARGET_ARCH_ABI)
 $(info LOCAL_LIB = $(LOCAL_LIB))
 
 include $(CLEAR_VARS)
