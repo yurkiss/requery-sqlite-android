@@ -216,6 +216,20 @@ prepare_icu_c_cxx_cpp() {
         -DUCONFIG_NO_LEGACY_CONVERSION=$(bool_to_int_inv $enable_legacy_converters) \
         -DUCONFIG_NO_REGULAR_EXPRESSIONS=$(bool_to_int_inv $enable_regex) \
         -DUCONFIG_NO_TRANSLITERATION=$(bool_to_int_inv $enable_transliteration)"
+    
+    # icu_configure_args="\
+    #     --enable-extras=no --enable-strict=no \
+    #     --enable-tests=no --enable-samples=no --enable-dyload=no"
+
+    # __FLAGS="-I$NDK_STANDARD_ROOT/sysroot/usr/include/ \
+    #     -Os -fno-short-wchar -fno-short-enums \
+    #     -DU_USING_ICU_NAMESPACE=1 \
+    #     -DU_HAVE_NL_LANGINFO_CODESET=0 \
+    #     -D__STDC_INT64__ \
+    #     -DU_TIMEZONE=0 \
+    #     -DUCONFIG_NO_LEGACY_CONVERSION=1 \
+    #     -ffunction-sections -fdata-sections -fvisibility=hidden"
+
 
     case "$library_type" in
     "$LIB_TYPE_SHARED" )
