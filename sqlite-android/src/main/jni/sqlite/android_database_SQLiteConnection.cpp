@@ -30,6 +30,14 @@
 #include "android_database_SQLiteCommon.h"
 #include "CursorWindow.h"
 
+#ifdef SQLITE_ENABLE_ICU
+#include <unicode/ucol.h>
+#include <unicode/uiter.h>
+#include <unicode/ustring.h>
+#include <unicode/utypes.h>
+#endif //SQLITE_ENABLE_ICU
+
+
 // Set to 1 to use UTF16 storage for localized indexes.
 #define UTF16_STORAGE 0
 
@@ -133,6 +141,88 @@ static int coll_localized(
   return rc;
 }
 
+#ifdef SQLITE_ENABLE_ICU
+    static int collate16(void *p, int n1, const void *v1, int n2, const void *v2)
+    {
+        UCollator *coll = (UCollator *) p;
+        UCollationResult result = ucol_strcoll(coll, (const UChar *) v1, n1,
+                                               (const UChar *) v2, n2);
+
+        if (result == UCOL_LESS) {
+            return -1;
+        } else if (result == UCOL_GREATER) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    static int collate8(void *p, int n1, const void *v1, int n2, const void *v2)
+    {
+        UCollator *coll = (UCollator *) p;
+        UCharIterator i1, i2;
+        UErrorCode status = U_ZERO_ERROR;
+
+        uiter_setUTF8(&i1, (const char *) v1, n1);
+        uiter_setUTF8(&i2, (const char *) v2, n2);
+
+        UCollationResult result = ucol_strcollIter(coll, &i1, &i2, &status);
+
+        if (U_FAILURE(status)) {
+//        ALOGE("Collation iterator error: %d\n", status);
+        }
+
+        if (result == UCOL_LESS) {
+            return -1;
+        } else if (result == UCOL_GREATER) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    static void localized_collator_dtor(UCollator* collator)
+    {
+        ucol_close(collator);
+    }
+#endif // SQLITE_ENABLE_ICU
+
+extern "C" int register_android_functions(sqlite3 * handle, int utf16Storage __attribute((unused)))
+{
+    int err;
+#ifdef SQLITE_ENABLE_ICU
+    UErrorCode status = U_ZERO_ERROR;
+
+    UCollator * collator = ucol_open(NULL, &status);
+    if (U_FAILURE(status)) {
+        return -1;
+    }
+
+    if (utf16Storage) {
+        // Note that text should be stored as UTF-16
+        err = sqlite3_exec(handle, "PRAGMA encoding = 'UTF-16'", 0, 0, 0);
+        if (err != SQLITE_OK) {
+            return err;
+        }
+
+        // Register the UNICODE collation
+        err = sqlite3_create_collation_v2(handle, "UNICODE", SQLITE_UTF16, collator, collate16,
+                                          (void(*)(void*))localized_collator_dtor);
+    } else {
+        err = sqlite3_create_collation_v2(handle, "UNICODE", SQLITE_UTF8, collator, collate8,
+                                          (void(*)(void*))localized_collator_dtor);
+    }
+
+    if (err != SQLITE_OK) {
+        return err;
+    }
+#endif // SQLITE_ENABLE_ICU
+
+    return SQLITE_OK;
+
+}
+
+
 static jlong nativeOpen(JNIEnv* env, jclass clazz, jstring pathStr, jint openFlags,
         jstring labelStr, jboolean enableTrace, jboolean enableProfile) {
 
@@ -176,7 +266,6 @@ static jlong nativeOpen(JNIEnv* env, jclass clazz, jstring pathStr, jint openFla
     }
 
     // Register custom Android functions.
-#if 0
     err = register_android_functions(db, UTF16_STORAGE);
     if (err) {
         env->ReleaseStringUTFChars(pathStr, pathChars);
@@ -185,7 +274,6 @@ static jlong nativeOpen(JNIEnv* env, jclass clazz, jstring pathStr, jint openFla
         sqlite3_close(db);
         return 0;
     }
-#endif
 
     // Create wrapper object.
     SQLiteConnection* connection = new SQLiteConnection(db, openFlags, pathChars, labelChars);
