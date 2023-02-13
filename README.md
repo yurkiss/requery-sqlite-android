@@ -1,3 +1,29 @@
+Fork of [requery/sqlite-android](https://github.com/requery/sqlite-android/) repository.
+
+# Build ICU for Android
+Run following commands:
+```shell
+cd cross_compile_icu4c_for_android
+./build_icu -c
+./build_icu arm && ./build_icu arm64 && ./build_icu x86 && ./build_icu x86_64
+```
+
+# Copy compiled ICU libraries to sqlite-android sources.
+Run copy_to_requery.sh script.
+```shell
+# if you are not in the project root folder
+cd ..  
+./copy_to_requery.sh
+```
+Location of compiled libraries and their header files described in the script. 
+
+# Build SQLite
+
+```shell
+./gradlew assembleRelease
+```
+
+
 # Android SQLite support library
 
 ![Build Status](https://github.com/requery/sqlite-android/actions/workflows/ci.yml/badge.svg)
